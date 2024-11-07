@@ -10,7 +10,6 @@ void main() {
   runApp(
     MultiProvider(providers: [
       Provider(create: (context) => UserProtocol()),
-      ChangeNotifierProvider(create: (context) => Conversation()),
       ProxyProvider<UserProtocol, ConversationProtocol>(update: (context, userProtocol, _) => ConversationProtocol(userProtocol))
     ],
     child: const MyApp())

@@ -18,10 +18,10 @@ class ChatPageState extends State<ChatPage>{
 
   @override
   void initState() {
-    Conversation conversation = Provider.of<Conversation>(context, listen: false);
-
     _protocol = Provider.of<ConversationProtocol>(context, listen: false);
-    _protocol.startConversation(conversation);
+    //TODO: Check local DB for conversation Id, if it exists, call continue conversation.
+    // _protocol.continueConversation();
+    _protocol.startNewConversation(); // Start brand new conversation
 
     // TODO: handle errors
 
@@ -37,35 +37,37 @@ class ChatPageState extends State<ChatPage>{
   }
 
   List<Widget> buildConversations(Conversation conversation){
-    // TODO: PResent the correct type of data depending on message type
+    // TODO: Present the correct type of data depending on message type
     var tiles = conversation.messages.map((item) => new Text(item.payload ?? "")).toList();
     return tiles;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Consumer<Conversation>(
-              builder: (context, value, child) => Expanded(
-                child: 
-                  ListView(
-                    shrinkWrap: true,
-                    reverse: true,
-                    children: buildConversations(value),
+    return ChangeNotifierProvider.value(value: _protocol.currentConversation,
+      child: Scaffold(
+        body: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Consumer<Conversation>(
+                builder: (context, value, child) => Expanded(
+                  child: 
+                    ListView(
+                      shrinkWrap: true,
+                      reverse: true,
+                      children: buildConversations(value),
+                  )
                 )
+              ),
+              // TODO: Top navigation bar goes here,
+              // TopNavBar(),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child:ChatBar(),
               )
-            ),
-            // TODO: Top navigation bar goes here,
-            // TopNavBar(),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child:ChatBar(),
-            )
-          ]
+            ]
+          )
         )
       )
     );

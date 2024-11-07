@@ -1,3 +1,5 @@
+import 'package:viddy/enums/messageType.dart';
+
 class Message{
   Message(this._userID, this._payload, {this.messageType = MessageType.Text});
   
@@ -6,7 +8,6 @@ class Message{
     _payload = data["payload"] as String,
     messageType = MessageType.values[int.parse(data["messageType"]!)];
   
-  // #region Properties
   String? _userID;
   String? get userID => _userID; 
 
@@ -22,10 +23,4 @@ class Message{
       "messageType": messageType.index
     };
   }
-}
-
-
-enum MessageType{
-  Text,
-  Image,
 }
