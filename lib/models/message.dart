@@ -6,7 +6,7 @@ class Message{
   Message.toAppModel(Map<String, dynamic> data)
     :_userID = data["userID"] as String,
     _payload = data["payload"] as String,
-    messageType = MessageType.values[int.parse(data["messageType"]!)];
+    messageType = MessageType.values[data["messageType"]!];
   
   String? _userID;
   String? get userID => _userID; 
