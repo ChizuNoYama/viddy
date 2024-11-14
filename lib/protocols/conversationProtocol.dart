@@ -5,6 +5,7 @@ import 'package:viddy/enums/conversationAction.dart';
 import 'package:viddy/enums/messageType.dart';
 import 'package:viddy/models/conversation.dart';
 import 'package:viddy/models/message.dart';
+import 'package:viddy/models/ui/conversation_preview.dart';
 import 'package:viddy/protocols/userProtocol.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:viddy/core/assumptions.dart';
@@ -14,12 +15,18 @@ class ConversationProtocol {
   ConversationProtocol(this._userProtocol);
 
   UserProtocol _userProtocol;
+  
+  late List<String> _conversationIdList;
+  List<String> get conversationIdList => _conversationIdList;
 
   late Conversation? _currentConversation;
   Conversation? get currentConversation => _currentConversation;
   
   late WebSocketChannel _webSocketChannel;
   Stream get socketStream => _webSocketChannel.stream;
+
+  late List<ConversationPreview> _conversationPreviewList;
+  List<ConversationPreview> get conversationPreviewList => _conversationPreviewList;
 
   void startNewConversation({Conversation? existingConversation = null}) async {
     if(existingConversation == null){
@@ -59,7 +66,7 @@ class ConversationProtocol {
     });
 
     _webSocketChannel.stream.listen((value){
-      // String text = utf8.decode(value);
+      // String text = utf8.decode(value); // Not neede since the data is in json format from the BE
       Map<String, dynamic> data = jsonDecode(value); // TODO: Convert to an object that can be deserialized easliy and not  have to be parsed here
 
       ConversationAction action = ConversationAction.values[data[Assumptions.CONVERSATION_ACTION_KEY] as int];
@@ -85,15 +92,11 @@ class ConversationProtocol {
       // Check close reason
       print("Stream closed");
     });
+  }
 
-    // Map<String, dynamic> conversationData = {
-    //   Assumptions.CONVERSATION_ACTION_KEY: ConversationAction.Start.index,
-    //   Assumptions.CONVERSATION_ID_KEY: _currentConversation?.id,
-    //   Assumptions.USER_ID_KEY: _userProtocol.getUser().userID
-    // };
-
-    // String conversationJson = jsonEncode(conversationData);
-    // _webSocketChannel.sink.add(conversationJson);
+//TODO: Get list of conversation Id's from the BE.
+  Future<List<ConversationPreview>> getConversationList(){
+    return Future.value([]);
   }
 
   // TODO: Get the conversation from the Database. if it does not exist, throw an error or just start a new conversation
@@ -109,6 +112,7 @@ class ConversationProtocol {
   Future sendMessageWsAsync(String payload, {MessageType type = MessageType.Text}) async {
     Message message = new Message(_userProtocol.getUser().userID, payload, messageType: type);
     _currentConversation?.addMessage(message);
+
     Map<String, dynamic> messageData = {
       Assumptions.CONVERSATION_ACTION_KEY: ConversationAction.AddMessage.index,
       Assumptions.CONVERSATION_ID_KEY: _currentConversation?.id,

@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:uuid/uuid.dart';
 import 'package:viddy/models/message.dart';
 
-class Conversation extends ChangeNotifier{
+class Conversation with ChangeNotifier{
   Conversation(){
     _id = new Uuid().v8();
   }
