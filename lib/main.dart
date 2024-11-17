@@ -15,7 +15,7 @@ void main() {
       }),
       ProxyProvider<UserProtocol, ConversationProtocol>(update: (context, userProtocol, _) => ConversationProtocol(userProtocol))
     ],
-    child: const MyApp()).
+    child: const MyApp())
   );
 }
 
