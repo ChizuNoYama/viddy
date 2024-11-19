@@ -7,4 +7,6 @@ class Assumptions{
   static const String MESSAGE_KEY = "message";
   static const String USER_ID_KEY = "userId";
   static const String USER_KEY = "user";
+  static const String PAYLOAD_KEY = "payload";
+  static const String MESSAGE_TYPE_KEY = "messageType";
 }

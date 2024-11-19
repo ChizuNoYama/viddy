@@ -2,17 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viddy/pages/chat_page.dart';
 import 'package:viddy/protocols/userProtocol.dart';
-
-import 'protocols/conversationProtocol.dart';
+import 'package:viddy/protocols/conversationProtocol.dart';
 
 void main() {
   runApp(
     MultiProvider(providers: [
-      Provider(create: (context) async {
-        UserProtocol protocol = new UserProtocol();
-        await protocol.initializeAsync();
-        return protocol;
-      }),
+      Provider(create: (context) => UserProtocol()),
       ProxyProvider<UserProtocol, ConversationProtocol>(update: (context, userProtocol, _) => ConversationProtocol(userProtocol))
     ],
     child: const MyApp())

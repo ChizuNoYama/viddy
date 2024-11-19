@@ -8,15 +8,14 @@ class UserProtocol{
 
   UserProtocol();
 
-  Future<void>initializeAsync() async{
-    // TODO: Find the user ID in local DB/SharedPreferences
-    _currentUser = await PreferencesHelper.getUser();
-  }
-
-  User getUser(){
+  Future<User> getUserAsync() async{
     if(_currentUser == null){
-      _currentUser = User.initialize(); // Or throw if the user is not initialized to enforce user object state
-      PreferencesHelper.setUser(_currentUser!);
+      _currentUser = await PreferencesHelper.getUser();
+      // Check if user is null once more
+      if(_currentUser == null){
+        _currentUser = User.initialize();
+        await PreferencesHelper.setUser(_currentUser!);
+      }
     }
       return _currentUser!;
   }

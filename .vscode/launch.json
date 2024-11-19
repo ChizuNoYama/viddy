@@ -1,13 +1,6 @@
 {
     "configurations": [
         {
-            "name": "viddy (Flutter iPhone 16 Plus)",
-            "program": "lib/main.dart",
-            "deviceId": "63459F31-DB25-4180-93F1-EFB498B9A8B4",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
             "name": "viddy (Flutter)",
             "program": "lib/main.dart",
             // "deviceId": "63459F31-DB25-4180-93F1-EFB498B9A8B4",

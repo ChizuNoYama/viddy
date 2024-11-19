@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:viddy/enums/conversationAction.dart';
 import 'package:viddy/enums/messageType.dart';
 import 'package:viddy/models/conversation.dart';
@@ -15,11 +16,11 @@ class ConversationProtocol {
   ConversationProtocol(this._userProtocol);
 
   UserProtocol _userProtocol;
-  
-  late List<String> _conversationIdList;
-  List<String> get conversationIdList => _conversationIdList;
 
-  late Conversation? _currentConversation;
+  late List<String> _conversationIdList;
+  List<String> get conversationIdList {return  _conversationIdList;}
+
+  Conversation? _currentConversation;
   Conversation? get currentConversation => _currentConversation;
   
   late WebSocketChannel _webSocketChannel;
@@ -28,24 +29,22 @@ class ConversationProtocol {
   late List<ConversationPreview> _conversationPreviewList;
   List<ConversationPreview> get conversationPreviewList => _conversationPreviewList;
 
-  void startNewConversation({Conversation? existingConversation = null}) async {
-    if(existingConversation == null){
-      _currentConversation = new Conversation();
-    }
-    else{
-      _currentConversation = existingConversation;
-    }
+  // #endregion Properties
+
+  Future<void> startNewConversationAsync({Conversation? existingConversation = null}) async {
+    _currentConversation = existingConversation ?? new Conversation();
     
     _webSocketChannel = WebSocketChannel.connect(Uri.parse(Assumptions.WEBSOCKET_API_URL));
 
     try{
-      // TODO: Handle errors
+      String userID = (await _userProtocol.getUserAsync()).userId;
+
       _webSocketChannel.ready.then((_) {
         // Send information about ther conversation
         Map<String, dynamic> connectionData = {
           Assumptions.CONVERSATION_ACTION_KEY: ConversationAction.Start.index,
           Assumptions.CONVERSATION_ID_KEY: _currentConversation?.id,
-          Assumptions.USER_ID_KEY: _userProtocol.getUser().userID
+          Assumptions.USER_ID_KEY: userID
         };
 
         String connectionJson = jsonEncode(connectionData);
@@ -65,7 +64,7 @@ class ConversationProtocol {
       print("Sink closed");
     });
 
-    _webSocketChannel.stream.listen((value){
+    _webSocketChannel.stream.listen((value) async {
       // String text = utf8.decode(value); // Not neede since the data is in json format from the BE
       Map<String, dynamic> data = jsonDecode(value); // TODO: Convert to an object that can be deserialized easliy and not  have to be parsed here
 
@@ -73,8 +72,9 @@ class ConversationProtocol {
       switch (action){
         case ConversationAction.AddMessage:
           // Check if the message came from another user. If so, message will be added to conversation on the LHS.
-          Message message = Message.toAppModel(data[Assumptions.MESSAGE_KEY]);
-          if(message.userID != _userProtocol.getUser().userID){
+          Message message = Message.fromJson(data[Assumptions.MESSAGE_KEY]);
+          String? userId = (await _userProtocol.getUserAsync()).userId;
+          if(message.userID != userId){
             print("Adding message sent from another user to the conversation");
             _currentConversation?.addMessage(message);
           }
@@ -95,14 +95,10 @@ class ConversationProtocol {
   }
 
 //TODO: Get list of conversation Id's from the BE.
-  Future<List<ConversationPreview>> getConversationList(){
-    return Future.value([]);
-  }
-
-  // TODO: Get the conversation from the Database. if it does not exist, throw an error or just start a new conversation
-  void continueConversation(Conversation conversation){
-    _currentConversation = conversation;
-
+  Future<List<String>> getConversationIdList() async{
+    http.Response response = await http.get(Uri.parse("${Assumptions.API_URL}/convoList"));
+    List<String> idList = jsonDecode(response.body);
+    return idList;
   }
 
   void closeConnection(){
@@ -110,7 +106,8 @@ class ConversationProtocol {
   }
 
   Future sendMessageWsAsync(String payload, {MessageType type = MessageType.Text}) async {
-    Message message = new Message(_userProtocol.getUser().userID, payload, messageType: type);
+    String? userId = (await _userProtocol.getUserAsync()).userId;
+    Message message = new Message(userId, payload, messageType: type);
     _currentConversation?.addMessage(message);
 
     Map<String, dynamic> messageData = {

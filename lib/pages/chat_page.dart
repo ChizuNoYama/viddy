@@ -6,10 +6,7 @@ import 'package:viddy/protocols/conversationProtocol.dart';
 
 class ChatPage extends StatefulWidget{
   @override 
-  State<StatefulWidget> createState(){
-
-    return new ChatPageState();
-  }
+  State<StatefulWidget> createState() => ChatPageState();
 }
 
 class ChatPageState extends State<ChatPage>{
@@ -17,16 +14,11 @@ class ChatPageState extends State<ChatPage>{
   late ConversationProtocol _protocol;
 
   @override
-  void initState() {
+  void initState(){
     _protocol = Provider.of<ConversationProtocol>(context, listen: false);
-    //TODO: Check local DB for conversation Id, if it exists, call continue conversation.
-    // _protocol.continueConversation();
-    _protocol.startNewConversation(); // Start brand new conversation
-
-    // TODO: handle errors
+    _protocol.startNewConversationAsync(); // Run in the background. Widget will be redrawn when needed.
 
     super.initState();
-    
   }
 
   @override
@@ -38,7 +30,7 @@ class ChatPageState extends State<ChatPage>{
 
   List<Widget> buildConversations(Conversation conversation){
     // TODO: Present the correct type of data depending on message type
-    var tiles = conversation.messages.map((item) => new Text(item.payload ?? "")).toList();
+    List<Text> tiles = conversation.messages.map((item) => new Text(item.payload ?? "")).toList();
     return tiles;
   }
 
