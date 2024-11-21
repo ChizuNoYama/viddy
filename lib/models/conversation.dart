@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:uuid/uuid.dart';
+import 'package:viddy/core/assumptions.dart';
 import 'package:viddy/models/message.dart';
 
 class Conversation with ChangeNotifier{
@@ -8,6 +9,10 @@ class Conversation with ChangeNotifier{
   }
 
   Conversation.continueConversation(this._id, this._messages);
+  Conversation.toAppModel(Map<String, dynamic> data){
+    _id = data[Assumptions.ID_KEY];
+    _messages = data[Assumptions.MESSAGE_KEY];
+  }
 
   String? _id;
   String? get id => _id;

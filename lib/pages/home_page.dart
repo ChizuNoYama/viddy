@@ -2,7 +2,15 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:viddy/protocols/conversationProtocol.dart";
 
-class ConversationListPage extends StatelessWidget{
+class HomePage extends StatefulWidget{
+
+  @override
+  State<StatefulWidget> createState() => HomePageState();
+
+}
+
+class HomePageState extends State<HomePage>{
+
 
   Future<List<String>> getConversationsAsync(ConversationProtocol protocol) async{
     List<String> idList =  await protocol.getConversationIdList();

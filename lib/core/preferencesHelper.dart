@@ -14,13 +14,13 @@ class PreferencesHelper {
       return null;
     }
   
-    User? user = User.fromJson(jsonDecode(userString));
+    User? user = User.toAppModel(jsonDecode(userString));
     return user;
   }
 
   static Future<void> setUser(User user) async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    String dataString = jsonEncode(user.toJson());
+    String dataString = jsonEncode(user.toMap());
     preferences.setString(Assumptions.USER_KEY, dataString);
   }
 }

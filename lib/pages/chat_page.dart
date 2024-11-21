@@ -16,16 +16,9 @@ class ChatPageState extends State<ChatPage>{
   @override
   void initState(){
     _protocol = Provider.of<ConversationProtocol>(context, listen: false);
-    _protocol.startNewConversationAsync(); // Run in the background. Widget will be redrawn when needed.
+    // _protocol.startNewConversationAsync(); // Run in the background. Widget will be redrawn when needed.
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _protocol.closeConnection;
-    
-    super.dispose();
   }
 
   List<Widget> buildConversations(Conversation conversation){

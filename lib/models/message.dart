@@ -4,10 +4,11 @@ import 'package:viddy/enums/messageType.dart';
 class Message{
   Message(this._userID, this._payload, {this.messageType = MessageType.Text});
   
-  Message.fromJson(Map<String, dynamic> data)
-    :_userID = data[Assumptions.USER_ID_KEY] as String,
-    _payload = data[Assumptions.PAYLOAD_KEY] as String,
+  Message.fromJson(Map<String, dynamic> data){
+    _userID = data[Assumptions.USER_ID_KEY] as String;
+    _payload = data[Assumptions.PAYLOAD_KEY] as String;
     messageType = MessageType.values[data[Assumptions.MESSAGE_TYPE_KEY]!];
+  }
   
   String? _userID;
   String? get userID => _userID; 

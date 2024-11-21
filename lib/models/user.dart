@@ -5,14 +5,13 @@ class User{
   
   User(this._userID);
   User.initialize(): _userID = new Uuid().v8();
-  User.fromJson(Map<String, dynamic> data)
-    : _userID = data[Assumptions.USER_ID_KEY] as String;
+  User.toAppModel(Map<String, dynamic> data): _userID = data[Assumptions.USER_ID_KEY] as String;
 
 
   String _userID;
   String get userId => _userID;
 
-  Map<String, dynamic> toJson(){
+  Map<String, dynamic> toMap(){
     return {
       Assumptions.USER_ID_KEY: _userID
     };
