@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 // }
 
 class Entry extends StatelessWidget{
-  Entry({this.onFinished, this.isSecretText = false, this.shouldResetTextOnFinish = false});
+  Entry({this.onSubmitted, this.onChanged, this.isSecretText = false, this.shouldResetTextOnFinish = false});
 
-  final Function(String)? onFinished;
+  final Function(String)? onSubmitted;
+  final Function(String)? onChanged;
   final TextEditingController _controller = new TextEditingController();
   final bool isSecretText;
   final shouldResetTextOnFinish;
@@ -22,19 +23,20 @@ class Entry extends StatelessWidget{
           borderRadius: BorderRadius.all(Radius.circular(16))
         ),
       ),
-      onTapOutside: (event){
-        if(this.onFinished != null){
-          this.onFinished!(_controller.text);
+      onChanged: (text){
+        if(this.onChanged == null){
+          return;
         }
+        this.onChanged!(text);
       },
       onSubmitted: (value){
         if(this.shouldResetTextOnFinish){
           _controller.text = "";
         }
-        if(onFinished == null){
+        if(onSubmitted == null){
           return;
         }
-        this.onFinished!(value);
+        this.onSubmitted!(value);
         // Dismiss the keyboard
       }
     );

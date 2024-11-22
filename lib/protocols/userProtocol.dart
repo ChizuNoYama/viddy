@@ -26,9 +26,15 @@ class UserProtocol{
     return _currentUser;
   }
 
-  Future<bool>loginUser({required String email, required String  password}) async{
+  Future<bool>loginOrRegisterUser({required bool isNewUser}) async{
     try{
-      supa.AuthResponse res = await supa.Supabase.instance.client.auth.signInWithPassword(email: email, password: password);
+      supa.AuthResponse res;
+      if(isNewUser){
+        res = await supa.Supabase.instance.client.auth.signUp(email: _registerInfo.email, password: _registerInfo.password!);
+      }
+      else{
+        res = await supa.Supabase.instance.client.auth.signInWithPassword(email: _registerInfo.email, password: _registerInfo.password!);
+      }
       if(res.user == null){
         return false;
       }
