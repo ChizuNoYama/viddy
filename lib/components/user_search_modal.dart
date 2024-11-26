@@ -28,7 +28,9 @@ class AnimatedUsersSearchModal extends StatelessWidget{
         child: TweenAnimationBuilder(
           duration: Duration(milliseconds: 600),
           curve: Curves.easeOutExpo,
-          tween: Tween<Offset>(begin: Offset(0.0, MediaQuery.sizeOf(context).height), end: Offset(0.0, 0.0)),
+          tween: Tween<Offset>(
+            begin: Offset(0.0, MediaQuery.sizeOf(context).height), 
+            end: Offset(0.0, 0.0)),
           builder: (context, offset, child) => Transform.translate(
             offset: offset,
             child: Column(
