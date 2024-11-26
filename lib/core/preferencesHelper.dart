@@ -6,7 +6,7 @@ import 'package:viddy/models/user.dart';
 
 class PreferencesHelper {
   
-  static Future<User?> getUser() async{
+  static Future<User?> getUserAsync() async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? userString = await preferences.getString(Assumptions.USER_KEY);
     
@@ -18,7 +18,7 @@ class PreferencesHelper {
     return user;
   }
 
-  static Future<void> setUser(User user) async{
+  static Future<void> setUserAsync(User user) async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String dataString = jsonEncode(user.toMap());
     preferences.setString(Assumptions.USER_KEY, dataString);

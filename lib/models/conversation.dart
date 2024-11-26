@@ -20,7 +20,7 @@ class Conversation with ChangeNotifier{
   List<Message> _messages = [];
   Iterable<Message> get messages => _messages.reversed;
 
-  addMessage(Message message){
+  void addMessage(Message message){
     _messages.add(message);
     notifyListeners();
   }

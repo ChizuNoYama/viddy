@@ -98,9 +98,7 @@ class ConversationProtocol {
 
 //TODO: Get list of conversation Id's from the BE.
   Future<List<String>> getConversationIdList() async{
-    // http.Response response = await http.get(Uri.parse("${Assumptions.API_URL}/convoList"));
-    // List<String> idList = jsonDecode(response.body);
-    // return idList;
+    
     return new List<String>.empty();
   }
 

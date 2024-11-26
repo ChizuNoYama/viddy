@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viddy/core/assumptions.dart';
 import 'package:viddy/pages/chat_page.dart';
 import 'package:viddy/pages/home_page.dart';
 import 'package:viddy/pages/login_page.dart';
+import 'package:viddy/protocols/user_search_cubit.dart';
 import 'package:viddy/protocols/userProtocol.dart';
 import 'package:viddy/protocols/conversationProtocol.dart';
 
@@ -18,8 +20,9 @@ Future<void> main() async{
 
   runApp(
     MultiProvider(providers: [
-      Provider.value(value: UserProtocol()),
-      ProxyProvider<UserProtocol, ConversationProtocol>(update: (context, userProtocol, _) => ConversationProtocol(userProtocol))
+      Provider(create: (context) => UserProtocol()),
+      ProxyProvider<UserProtocol, ConversationProtocol>(update: (context, userProtocol, _) => ConversationProtocol(userProtocol)),
+      BlocProvider(create: (context) => UserSearchCubit(false))
     ],
     child: const MyApp())
   );

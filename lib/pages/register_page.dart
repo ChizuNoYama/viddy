@@ -3,15 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:viddy/controls/entry.dart';
 import 'package:viddy/core/navigationHelper.dart';
 import 'package:viddy/pages/home_page.dart';
-import 'package:viddy/pages/register_page.dart';
 import 'package:viddy/protocols/userProtocol.dart';
 
-class LoginPage extends StatelessWidget{
+class RegisterPage extends StatelessWidget{
 
-  Future<void> _loginUserAsync(BuildContext context, UserProtocol userProtocol) async{
-    bool success = await userProtocol.loginOrRegisterUserAsync(isNewUser: false);
+  Future<void> _registerUserAsync(BuildContext context, UserProtocol userProtocol) async{
+    bool success = await userProtocol.loginOrRegisterUserAsync(isNewUser: true);
     if(success){
-      await NavigationHelper.goToAsync(context, HomePage(), replacePreviousRoute: true);
+      await NavigationHelper.goToAsync(context, HomePage());
     }
     else{
       showDialog(context: context, builder: (context) {
@@ -19,11 +18,11 @@ class LoginPage extends StatelessWidget{
           alignment: Alignment.center,
           contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
           children: [
-            const Text("The email or password you have entered is incorrect. Try again."),
-            const SizedBox(height: 16.0),
+            Text("User was not created. Try again later"),
+            SizedBox(height: 16.0),
             OutlinedButton(
               onPressed: () => Navigator.pop(context), 
-              child: const Text("Okay")
+              child: const Text("Close")
             )
           ],
         );
@@ -38,9 +37,13 @@ class LoginPage extends StatelessWidget{
         builder: (_, userProtocol, __) => Center(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 32.0),
-            child:  Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Text("User name"),
+                SizedBox(width:0, height:16),
+                Entry(onChanged: (text) => userProtocol.registerInfo.userName = text),
+                SizedBox(width:0, height:16),
                 Text("Email"),
                 SizedBox(width:0, height:16),
                 Entry(onChanged: (text) => userProtocol.registerInfo.email = text), // Email
@@ -51,20 +54,20 @@ class LoginPage extends StatelessWidget{
                   isSecretText: true,
                   onChanged: (text) => userProtocol.registerInfo.password = text
                 ), // Paswword
+                Text("Confirm Password"),
+                SizedBox(width:0, height:16),
+                Entry(
+                  isSecretText: true,
+                  onChanged: (text) => userProtocol.registerInfo.confirmedPassword = text
+                ), // Paswword
                 SizedBox(width:0, height: 16),
                 OutlinedButton(
-                  onPressed: () async => await _loginUserAsync(context, userProtocol),
-                  child: Text("Login"),
+                  onPressed: () async => await _registerUserAsync(context, userProtocol),
+                  child: Text("Sign up"),
                 ),
-                Text("- or -"),
-                SizedBox(width:0, height:16),
-                OutlinedButton(
-                  onPressed: (() async => await NavigationHelper.goToAsync(context, RegisterPage())),
-                  child: Text("Create Account")
-                )
               ],
             )
-          )
+          ),
         )
       )
     );
