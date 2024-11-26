@@ -103,7 +103,7 @@ class ConversationProtocol {
   }
 
   Future sendMessageWsAsync(String payload, {MessageType type = MessageType.Text}) async {
-    String? userId = (await _userProtocol.currentUser)!.userId;
+    String? userId = (await _userProtocol.currentUser).userId;
     Message message = new Message(userId, payload, messageType: type);
     _currentConversation?.addMessage(message);
 

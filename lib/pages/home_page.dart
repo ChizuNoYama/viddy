@@ -1,10 +1,8 @@
 import "package:flutter/material.dart";
-import "package:flutter_bloc/flutter_bloc.dart";
 import "package:provider/provider.dart";
 import "package:viddy/components/user_search_modal.dart";
 import "package:viddy/core/navigationHelper.dart";
 import "package:viddy/protocols/conversationProtocol.dart";
-import "package:viddy/protocols/user_search_cubit.dart";
 
 class HomePage extends StatefulWidget{
   @override
