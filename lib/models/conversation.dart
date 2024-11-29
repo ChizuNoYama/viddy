@@ -11,14 +11,14 @@ class Conversation with ChangeNotifier{
   Conversation.continueConversation(this._id, this._messages);
   Conversation.toAppModel(Map<String, dynamic> data){
     _id = data[Assumptions.ID_KEY];
-    _messages = data[Assumptions.MESSAGE_KEY];
+    _messages = data[Assumptions.MESSAGE_KEY] ?? [];
   }
 
   String? _id;
   String? get id => _id;
 
   List<Message> _messages = [];
-  Iterable<Message> get messages => _messages.reversed;
+  List<Message> get messages => _messages.reversed.toList();
 
   void addMessage(Message message){
     _messages.add(message);

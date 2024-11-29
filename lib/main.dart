@@ -20,7 +20,7 @@ Future<void> main() async{
     MultiProvider(providers: [
       Provider(create: (context) => UserProtocol()),
       ProxyProvider<UserProtocol, ConversationProtocol>(update: (context, userProtocol, _) => ConversationProtocol(userProtocol)),
-      BlocProvider(create: (context) => UserSearchCubit(false))
+      BlocProvider(create: (context) => UserSearchCubit(null))
     ],
     child: const MyApp())
   );

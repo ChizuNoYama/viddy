@@ -11,4 +11,5 @@ class Assumptions{
   static const String MESSAGE_LIST_KEY = "messageList";
   static const String MESSAGE_TYPE_KEY = "messageType";
   static const String PARTICIPANTS_KEY = "participants";
+  static const String SENDER_KEY = "sender";
 }

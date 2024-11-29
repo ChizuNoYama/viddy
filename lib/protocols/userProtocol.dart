@@ -84,10 +84,4 @@ class UserProtocol{
     }
     return true;
   }
-
-  Future<List<String>> getListOfUsersAsync() async{
-    List<Map<String, dynamic>> response = await supa.Supabase.instance.client.from("Users").select(Assumptions.USER_NAME_KEY);
-    List<String> listOfUsers = response.map((map) => map[Assumptions.USER_NAME_KEY] as String).toList();
-    return listOfUsers;
-  }
 }

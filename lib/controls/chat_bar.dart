@@ -14,7 +14,7 @@ class _ChatBarState extends State<ChatBar>{
   @override
   Widget build(BuildContext context) {
     return Entry(
-      onSubmitted: (text) => Provider.of<ConversationProtocol>(context, listen:false).sendMessageWsAsync(text),
+      onSubmitted: (text) => context.read<ConversationProtocol>().sendMessageAsync(text),
       shouldResetTextOnFinish: true,
     );
   }

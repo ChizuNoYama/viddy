@@ -16,15 +16,19 @@ class Entry extends StatelessWidget{
 
   Widget build(BuildContext context) {
     return TextField(
-      controller: _controller,
       obscureText: this.isSecretText,
       decoration: InputDecoration(
+        suffix: IconButton(
+          onPressed: this.onSubmitted!(_controller.text), 
+          icon: Image(image: AssetImage(""))
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(16))
         ),
       ),
       onChanged: (text){
-        if(this.onChanged == null){
+        print("Entry value ${text}");
+        if(this.onChanged == null || text.length == 0){
           return;
         }
         this.onChanged!(text);
@@ -38,7 +42,7 @@ class Entry extends StatelessWidget{
         }
         this.onSubmitted!(value);
         // Dismiss the keyboard
-      }
+      },
     );
   }
 }
