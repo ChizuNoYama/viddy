@@ -1,48 +1,62 @@
 import 'package:flutter/material.dart';
 
-// class Entry extends StatefulWidget{
-//   @override
-//   State<StatefulWidget> createState() => EntryState();
-// }
-
-class Entry extends StatelessWidget{
-  Entry({this.onSubmitted, this.onChanged, this.isSecretText = false, this.shouldResetTextOnFinish = false});
+class Entry extends StatefulWidget{
+  Entry({this.onSubmitted, this.onChanged, this.isSecretText = false, bool this.hasSubmitIcon = false});
 
   final Function(String)? onSubmitted;
   final Function(String)? onChanged;
-  final TextEditingController _controller = new TextEditingController();
+  final bool hasSubmitIcon;
   final bool isSecretText;
-  final shouldResetTextOnFinish;
+  final TextEditingController _controller = new TextEditingController();
+
+  @override
+  State<StatefulWidget> createState() => EntryState();
+}
+
+class EntryState extends State<Entry>{
+  
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  
+  Widget? showSuffixIcon(){
+    if(this.widget.onSubmitted == null){
+      return SizedBox.shrink();
+    }
+    return GestureDetector(
+      onTap: () {
+        this.widget.onSubmitted!(this.widget._controller.text);
+        this.widget._controller.clear();
+      },
+      child: Icon(
+        Icons.send,
+        size: 24.0
+      )
+    );
+  }
 
   Widget build(BuildContext context) {
     return TextField(
-      obscureText: this.isSecretText,
+      controller: this.widget._controller,
+      textAlignVertical: TextAlignVertical.center,
+      maxLines: this.widget.isSecretText ? 1 : null,
+      obscureText: this.widget.isSecretText,
       decoration: InputDecoration(
-        suffix: IconButton(
-          onPressed: this.onSubmitted!(_controller.text), 
-          icon: Image(image: AssetImage(""))
-        ),
+        suffixIcon: this.showSuffixIcon(),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(16))
         ),
       ),
       onChanged: (text){
-        print("Entry value ${text}");
-        if(this.onChanged == null || text.length == 0){
+        if(this.widget.onChanged == null || text.length == 0){
           return;
         }
-        this.onChanged!(text);
-      },
-      onSubmitted: (value){
-        if(this.shouldResetTextOnFinish){
-          _controller.text = "";
-        }
-        if(onSubmitted == null){
-          return;
-        }
-        this.onSubmitted!(value);
-        // Dismiss the keyboard
+        this.widget.onChanged!(text);
       },
     );
+  
   }
 }

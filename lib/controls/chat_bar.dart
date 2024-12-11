@@ -4,18 +4,12 @@ import 'package:viddy/controls/entry.dart';
 import 'package:viddy/protocols/conversationProtocol.dart';
 
 // turn into a stateful widget
-
-class ChatBar extends StatefulWidget{
-  @override createState() => _ChatBarState();
-}
-
-class _ChatBarState extends State<ChatBar>{
+class ChatBar extends StatelessWidget{
   
   @override
   Widget build(BuildContext context) {
     return Entry(
       onSubmitted: (text) => context.read<ConversationProtocol>().sendMessageAsync(text),
-      shouldResetTextOnFinish: true,
     );
   }
 }

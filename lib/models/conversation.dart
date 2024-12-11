@@ -8,14 +8,14 @@ class Conversation with ChangeNotifier{
     _id = new Uuid().v8();
   }
 
-  Conversation.continueConversation(this._id, this._messages);
+  Conversation.fromConversationData(this._id, this._messages);
   Conversation.toAppModel(Map<String, dynamic> data){
     _id = data[Assumptions.ID_KEY];
     _messages = data[Assumptions.MESSAGE_KEY] ?? [];
   }
 
-  String? _id;
-  String? get id => _id;
+  late String _id;
+  String get id => _id;
 
   List<Message> _messages = [];
   List<Message> get messages => _messages.reversed.toList();
@@ -29,6 +29,7 @@ class Conversation with ChangeNotifier{
   @override
   void dispose() {
     _messages.clear();
+    _id = "";
     super.dispose();
   }
 }

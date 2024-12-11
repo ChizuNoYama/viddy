@@ -1,13 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:viddy/enums/conversationAction.dart';
 import 'package:viddy/enums/messageType.dart';
 import 'package:viddy/models/conversation.dart';
+import 'package:viddy/models/conversation_preivew_model.dart';
 import 'package:viddy/models/message.dart';
 import 'package:viddy/protocols/userProtocol.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:viddy/core/assumptions.dart';
 
 class ConversationProtocol {
@@ -17,45 +15,120 @@ class ConversationProtocol {
   UserProtocol _userProtocol;
 
   late List<String> _conversationIdList;
-  List<String> get conversationIdList {return  _conversationIdList;}
+  List<String> get conversationIdList => _conversationIdList;
 
-  late Conversation _currentConversation;
+  Conversation _currentConversation = Conversation();
   Conversation get currentConversation => _currentConversation;
 
-  // #endregion Properties
+  late RealtimeChannel _channel; 
 
-  Future<void> startConversationAsync(List<String> targetParticipants, {Conversation? existingConversation = null}) async {
+  Future<void> startOrContinueConversationAsync({List<String>? targetParticipants = null, Conversation? existingConversation = null}) async {
     if(existingConversation != null){
       _currentConversation = existingConversation;
     }
     else{
-      
+      assert(targetParticipants != null);
       Map<String, dynamic> result = await Supabase.instance.client
         .from("Conversations")
         .insert({Assumptions.PARTICIPANTS_KEY : targetParticipants})
         .select().single();
         _currentConversation = Conversation.toAppModel(result);
     }
+
+    this.subscribeToChannel(_currentConversation.id);
   }
 
+  void clearConversationData(){
+    Supabase.instance.client.removeChannel(_channel);
+    _currentConversation.dispose();
+  }
+
+  void subscribeToChannel(String conversationId){
+     _channel = Supabase.instance.client.channel(
+      "conversation:${conversationId}",
+      opts: RealtimeChannelConfig(private: true, ack: true)
+    )
+    .onPostgresChanges(
+      event: PostgresChangeEvent.all,
+      schema: "public",
+      table: "Messages",
+      filter: PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq, 
+        column: Assumptions.CONVERSATION_ID_KEY, 
+        value: conversationId
+      ),
+      callback: (changePayload){
+        print(changePayload);
+        switch(changePayload.eventType){
+          case PostgresChangeEvent.insert:
+            Map<String,dynamic> dbMessage = changePayload.newRecord;
+            if(dbMessage[Assumptions.SENDER_KEY] == _userProtocol.currentUser.userId){
+              return;
+            } // Check if the message was just the message that was sent by the currentUser
+            
+            Message message = Message.toAppModel(changePayload.newRecord);
+            _currentConversation.addMessage(message); // Do no wait
+            break;
+          default:
+              break;
+        }
+      }
+    ).subscribe();
+  }
+  
+
 //TODO: Get list of conversation Id's from the BE.
-  Future<List<String>> getConversationIdList() async{
-    
-    return new List<String>.empty();
+  Future<List<ConversationPreviewModel>> getConversationsAsync() async{
+    try{
+      List<Map<String, dynamic>> result = await Supabase.instance.client.rpc("getConversations", params: {Assumptions.USER_ID_KEY: _userProtocol.currentUser.userId}).select();
+      List<ConversationPreviewModel> conversationPreivewList = List.empty(growable: true);
+      result.forEach((map) {
+        ConversationPreviewModel preview = ConversationPreviewModel.toAppModel(map);
+        conversationPreivewList.add(preview);
+      });
+      return conversationPreivewList;
+    } 
+    catch(e){
+      print (e);
+      return List.empty();
+    }
+  }
+
+  Future<Conversation?> getConversationMessagesAsync(String conversationId) async{
+    try{
+      List<Map<String, dynamic>> result = await Supabase.instance.client.rpc("getConversationMessages", params: {Assumptions.CONVO_ID_PARAM: conversationId});
+      List<Message> messageList = List.empty(growable: true);
+      result.forEach((map) {
+        Message message = Message.toAppModel(map);
+        messageList.add(message);
+      });
+      
+      Conversation conversation = Conversation.fromConversationData(conversationId, messageList);
+      // _currentConversation = conversation;
+      return conversation;
+    }
+    catch(e){
+      print(e);
+      return null;
+    }
   }
 
   Future<void> sendMessageAsync(String payload, {MessageType type = MessageType.Text}) async { // add status of message
-    String? userId = (await _userProtocol.currentUser).userId;
+    // Why are we awaiting the protocol to get the user
+    String? userId = _userProtocol.currentUser.userId;
     Message message = new Message(userId, payload, messageType: type);
     _currentConversation.addMessage(message);
 
-    Map<String, dynamic> messageData = {
-      Assumptions.CONVERSATION_ID_KEY: _currentConversation.id,
-      Assumptions.PAYLOAD_KEY: message.payload,
-      Assumptions.SENDER_KEY: message.userID,
-      Assumptions.MESSAGE_TYPE_KEY: message.messageType.index
-    };
+    Map<String, dynamic> messageData = message.toMap(_currentConversation.id);
     
-    await Supabase.instance.client.from("Messages").insert(messageData);
+    try{
+      await Supabase.instance.client.from("Messages").insert(messageData);
+
+      // BUG: When sending a braodcast message, This is not triggering our broadast listener
+      ChannelResponse res = await _channel.sendBroadcastMessage(event: Assumptions.MESSAGE_SENT_EVENT, payload: messageData); 
+    }
+    catch(e){
+      print(e);
+    }
   }
 }

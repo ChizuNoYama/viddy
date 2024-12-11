@@ -10,7 +10,7 @@ import 'package:viddy/protocols/user_search_cubit.dart';
 class AnimatedUsersSearchModal extends StatelessWidget{
 
   Widget presentUserList(List<User>? list){
-    print("*presentUserList()* is being called");
+    
     if(list == null){
       return SizedBox.shrink();
     }
@@ -28,7 +28,7 @@ class AnimatedUsersSearchModal extends StatelessWidget{
                   String otherUser = list[index].userId;
                   String currentUserId = context.read<UserProtocol>().currentUser.userId;                
                   List<String> participants = [currentUserId, otherUser];
-                  await context.read<ConversationProtocol>().startConversationAsync(participants);
+                  await context.read<ConversationProtocol>().startOrContinueConversationAsync(targetParticipants: participants);
                   NavigationHelper.goToAsync(context, ChatPage()); // Do not wait
                 },
                 child: Text(list[index].userName)
@@ -61,7 +61,7 @@ class AnimatedUsersSearchModal extends StatelessWidget{
               children: [
                 Row(
                   children: [
-                    BackButton(onPressed: null), // TOD: Close the modal
+                    BackButton(),
                   ],
                 ),
                 Container(
