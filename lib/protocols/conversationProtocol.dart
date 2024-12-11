@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viddy/enums/messageType.dart';
 import 'package:viddy/models/conversation.dart';
-import 'package:viddy/models/conversation_preivew_model.dart';
+import 'package:viddy/models/conversation_preivew_data.dart';
 import 'package:viddy/models/message.dart';
 import 'package:viddy/protocols/userProtocol.dart';
 import 'package:viddy/core/assumptions.dart';
@@ -78,12 +78,12 @@ class ConversationProtocol {
   
 
 //TODO: Get list of conversation Id's from the BE.
-  Future<List<ConversationPreviewModel>> getConversationsAsync() async{
+  Future<List<ConversationPreviewData>> getConversationsAsync() async{
     try{
       List<Map<String, dynamic>> result = await Supabase.instance.client.rpc("getConversations", params: {Assumptions.USER_ID_KEY: _userProtocol.currentUser.userId}).select();
-      List<ConversationPreviewModel> conversationPreivewList = List.empty(growable: true);
+      List<ConversationPreviewData> conversationPreivewList = List.empty(growable: true);
       result.forEach((map) {
-        ConversationPreviewModel preview = ConversationPreviewModel.toAppModel(map);
+        ConversationPreviewData preview = ConversationPreviewData.toAppModel(map);
         conversationPreivewList.add(preview);
       });
       return conversationPreivewList;

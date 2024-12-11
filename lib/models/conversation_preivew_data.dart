@@ -1,8 +1,8 @@
 import 'package:viddy/core/assumptions.dart';
 import 'package:viddy/enums/messageType.dart';
 
-class ConversationPreviewModel{
-  ConversationPreviewModel.toAppModel(Map<String, dynamic> map){
+class ConversationPreviewData{
+  ConversationPreviewData.toAppModel(Map<String, dynamic> map){
     _lastMessage = map[Assumptions.PAYLOAD_KEY] as String;
     _date = (map[Assumptions.CREATED_AT_KEY] as String).split("T")[0]; // DB returns format with the date and time separated by space. Get only the date
     _participants = (map[Assumptions.PARTICIPANTS_KEY] as List<dynamic>).cast<String>();
