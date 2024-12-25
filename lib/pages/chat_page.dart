@@ -12,7 +12,6 @@ class ChatPage extends StatelessWidget{
     return Scaffold(
       backgroundColor: Color(0xfff6ead5),
       body: SafeArea(
-        
         child: Container(
           padding: EdgeInsets.all(16),
           child: Column(

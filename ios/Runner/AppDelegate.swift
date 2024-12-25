@@ -23,8 +23,10 @@ import UIKit
   }
     
     func vibrateDevice(result: FlutterResult){
-        let impactGenerator = UIImpactFeedbackGenerator(style: .heavy);
-        impactGenerator.prepare();
-        impactGenerator.impactOccurred();
+        print("Long press works");
+        
+//        let impactGenerator = UIImpactFeedbackGenerator(style: .heavy);
+//        impactGenerator.prepare();
+//        impactGenerator.impactOccurred();
     }
 }

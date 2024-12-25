@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:viddy/components/conversation_preview.dart";
 import "package:viddy/components/user_search_modal.dart";
 import "package:viddy/core/navigationHelper.dart";
 import "package:viddy/models/conversation.dart";
@@ -22,6 +23,18 @@ class HomePage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xffff757a),
+        actions: [
+          GestureDetector(
+            onTap: () async => await NavigationHelper.showModalFullPageModalAsync(context, AnimatedUsersSearchModal()),
+            child:Icon(
+              Icons.message,
+              color: Colors.white,
+            )
+          ),
+        ],
+      ),
       body: SafeArea(
         top: true,
         child: Column(
@@ -29,30 +42,38 @@ class HomePage extends StatelessWidget{
             FutureBuilder(
               future: context.read<ConversationProtocol>().getConversationsAsync(),
               builder: (context, snapshot) {
-                if(!snapshot.hasData || snapshot.data?.length == 0){
-                  return Center(
-                    child: OutlinedButton(
-                      onPressed: () async => await NavigationHelper.showModalFullPageModalAsync(context, AnimatedUsersSearchModal()),
-                      child: Text("Start new conversation")
-                    )
-                  );
-                }
-                else{
-                  return Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data?.length,
-                      itemBuilder:(context, index) {
-                        return GestureDetector(
-                          onTap: () => goToChatPage(context, context.read<ConversationProtocol>(), snapshot.data![index].conversationId),
-                          child: Text(snapshot.data![index].lastMessage)
-                        );
-                      } // TODO: change this to show a list of ConversationPreviews
-                    )
-                  );
+                switch (snapshot.connectionState){
+                  case ConnectionState.waiting:
+                    return Center(child:CircularProgressIndicator());
+                  case ConnectionState.done:
+                    if(snapshot.hasData || snapshot.data?.length == 0){
+                      return Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: snapshot.data?.length,
+                          itemBuilder:(context, index) {
+                            // return Text("Testing");
+                            return GestureDetector(
+                              onTap: () => goToChatPage(context, context.read<ConversationProtocol>(), snapshot.data![index].conversationId),
+                              child: Container(
+                                height: 50,
+                                width: MediaQuery.sizeOf(context).width,
+                                child:ConversationPreview(snapshot.data![index])
+                              )
+                            );
+                          }
+                        )
+                      );
+                    }
+                    else{
+                      return Text("Start a new conversation.");
+                    }
+                  case ConnectionState.none:
+                  default:
+                    return Center(child: Text("Something went wrong with retrieving conversations. Please try again soon."));
                 }
               }
-            ) 
+            )
           ],
         ),
       ),

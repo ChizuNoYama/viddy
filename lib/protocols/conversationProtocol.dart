@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viddy/enums/messageType.dart';
 import 'package:viddy/models/conversation.dart';
-import 'package:viddy/models/conversation_preivew_data.dart';
+import 'package:viddy/models/conversation_preview_data.dart';
 import 'package:viddy/models/message.dart';
 import 'package:viddy/protocols/userProtocol.dart';
 import 'package:viddy/core/assumptions.dart';
@@ -64,7 +64,7 @@ class ConversationProtocol {
             Map<String,dynamic> dbMessage = changePayload.newRecord;
             if(dbMessage[Assumptions.SENDER_KEY] == _userProtocol.currentUser.userId){
               return;
-            } // Check if the message was just the message that was sent by the currentUser
+            } // Check if the message was sent by the currentUser
             
             Message message = Message.toAppModel(changePayload.newRecord);
             _currentConversation.addMessage(message); // Do no wait

@@ -8,7 +8,7 @@ class PreferencesHelper {
   
   static Future<User?> getUserAsync() async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? userString = await preferences.getString(Assumptions.USER_KEY);
+    String? userString = preferences.getString(Assumptions.USER_KEY);
     
     if(userString == null){
       return null;
