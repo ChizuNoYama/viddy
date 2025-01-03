@@ -38,7 +38,7 @@ class ChatPage extends StatelessWidget{
                         shrinkWrap: true,
                         itemCount: conversation.messages.length,
                         itemBuilder: (context, index) { 
-                          String messageUserID = conversation.messages[index].userID!;
+                          String messageUserID = conversation.messages[index]. userID!;
                           String currentUserID = context.read<UserProtocol>().currentUser.userId;
                           bool isMyMessage = messageUserID == currentUserID;
                           return Align(

@@ -46,8 +46,7 @@ class ConversationProtocol {
 
   void subscribeToChannel(String conversationId) {
     _channel = Supabase.instance.client
-        .channel("conversation:${conversationId}",
-            opts: RealtimeChannelConfig(private: true, ack: true))
+        .channel("conversation:${conversationId}", opts: RealtimeChannelConfig(private: true, ack: true))
         .onPostgresChanges(
             event: PostgresChangeEvent.all,
             schema: "public",
@@ -61,8 +60,7 @@ class ConversationProtocol {
               switch (changePayload.eventType) {
                 case PostgresChangeEvent.insert:
                   Map<String, dynamic> dbMessage = changePayload.newRecord;
-                  if (dbMessage[Assumptions.SENDER_KEY] ==
-                      _userProtocol.currentUser.userId) {
+                  if (dbMessage[Assumptions.SENDER_KEY] == _userProtocol.currentUser.userId) {
                     return;
                   } // Check if the message was sent by the currentUser
 
@@ -79,15 +77,13 @@ class ConversationProtocol {
 //TODO: Get list of conversation Id's from the BE.
   Future<List<ConversationPreviewData>> getConversationsAsync() async {
     try {
-      List<Map<String, dynamic>> result = await Supabase.instance.client
-          .rpc("getConversations", params: {
+      List<Map<String, dynamic>> result = await Supabase.instance.client.rpc("getConversations", params: {
         Assumptions.USER_ID_KEY: _userProtocol.currentUser.userId
       }).select();
-      List<ConversationPreviewData> conversationPreivewList =
-          List.empty(growable: true);
+
+      List<ConversationPreviewData> conversationPreivewList = List.empty(growable: true);
       result.forEach((map) {
-        ConversationPreviewData preview =
-            ConversationPreviewData.toAppModel(map);
+        ConversationPreviewData preview = ConversationPreviewData.toAppModel(map);
         conversationPreivewList.add(preview);
       });
       return conversationPreivewList;
@@ -100,9 +96,7 @@ class ConversationProtocol {
   Future<Conversation?> getConversationMessagesAsync(
       String conversationId) async {
     try {
-      List<Map<String, dynamic>> result = await Supabase.instance.client.rpc(
-          "getConversationMessages",
-          params: {Assumptions.CONVO_ID_PARAM: conversationId});
+      List<Map<String, dynamic>> result = await Supabase.instance.client.rpc("getConversationMessages", params: {Assumptions.CONVO_ID_PARAM: conversationId});
       List<Message> messageList = List.empty(growable: true);
       result.forEach((map) {
         Message message = Message.toAppModel(map);
